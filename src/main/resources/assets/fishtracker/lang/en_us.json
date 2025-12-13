@@ -1,0 +1,10 @@
+{
+  "gui.fishtracker.title": "Fishtracker Settings",
+  "gui.fishtracker.category.general": "General",
+  "gui.fishtracker.field.username": "Username",
+  "gui.fishtracker.field.password": "Password",
+  "gui.fishtracker.field.api_key": "API Key",
+  "gui.fishtracker.field.endpoint": "Endpoint URL",
+  "gui.fishtracker.field.debug": "Debug Mode"
+}
+

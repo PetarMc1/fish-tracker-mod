@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "fishtracker",
+  "version": "${version}",
+  "name": "FishTracker",
+  "description": "A mod that tracks your caught fish on CosmosMc and sends them to an API",
+  "authors": ["Petar_mc"],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/fishtracker/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.petarmc.fishtracker.client.FishtrackerClient"
+    ],
+    "main": [
+      "com.petarmc.fishtracker.Fishtracker"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}",
+    "petarlib": "v1.2",
+    "cloth-config": "20.0.149"
+  }
+}

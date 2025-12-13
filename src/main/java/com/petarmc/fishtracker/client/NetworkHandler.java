@@ -1,0 +1,113 @@
+package com.petarmc.fishtracker.client;
+
+import com.petarmc.lib.log.PLog;
+import com.petarmc.lib.net.HttpClientWrapper;
+import com.petarmc.lib.task.TaskScheduler;
+
+import java.net.http.HttpRequest;
+import java.nio.charset.StandardCharsets;
+
+public class NetworkHandler {
+
+    private static final PLog log = new PLog("NetworkHandler");
+    private final ConfigManager config;
+    private final EncryptionManager encryption;
+    private final HttpClientWrapper client;
+    private final TaskScheduler scheduler;
+
+    public NetworkHandler(ConfigManager config, EncryptionManager encryption) {
+        this.config = config;
+        this.encryption = encryption;
+        this.client = new HttpClientWrapper(3);
+        this.scheduler = new TaskScheduler(4);
+    }
+
+    public boolean fetchKey() {
+        try {
+
+            String url = config.endpoint + "/get/user/key?name=" + config.user + "&password=" + config.password;
+
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(java.net.URI.create(url))
+                    .GET()
+                    .header("x-api-key", config.apiKey)
+                    .header("User-Agent", "FishtrackerClient/1.0")
+                    .build();
+
+            log.debug("Fetching Fernet key from: " + url);
+
+            String resp = client.post(req).join();
+            if (resp == null) {
+                log.error("Empty response when fetching key");
+                return false;
+            }
+
+            String respPreview = resp.length() > 400 ? resp.substring(0, 400) + "..." : resp;
+            log.debug("Key fetch response preview: " + respPreview);
+
+            String key = extractKeyFromResponse(resp);
+            if (key == null) {
+                log.error("fernetKey not found in response. Response preview: " + (resp.length() > 200 ? resp.substring(0,200) + "..." : resp));
+                return false;
+            }
+            encryption.setKey(key);
+            log.info("Fernet key loaded successfully");
+            return true;
+        } catch (Exception e) {
+            log.error("Failed to fetch key", e);
+            return false;
+        }
+    }
+
+    private String extractKeyFromResponse(String resp) {
+        if (resp == null) return null;
+
+        java.util.regex.Pattern[] patterns = new java.util.regex.Pattern[]{
+                java.util.regex.Pattern.compile("\"fernetKey\"\\s*:\\s*\"([^\"]+)\""),
+                java.util.regex.Pattern.compile("\"key\"\\s*:\\s*\"([^\"]+)\"")
+        };
+
+        for (java.util.regex.Pattern p : patterns) {
+            java.util.regex.Matcher m = p.matcher(resp);
+            if (m.find()) return m.group(1);
+        }
+
+        String t = resp.trim();
+        if (t.startsWith("\"") && t.endsWith("\"")) {
+            t = t.substring(1, t.length() - 1);
+        }
+
+        if (t.matches("[A-Za-z0-9_\\-]{16,255}={0,2}")) return t;
+
+        return null;
+    }
+
+
+    public void send(String path, String json) {
+        scheduler.runAsync(() -> {
+            try {
+
+                String encrypted = encryption.encrypt(json);
+                byte[] payload = encrypted.getBytes(StandardCharsets.UTF_8);
+
+                String url = config.endpoint + "/post/" + path + "?name=" + config.user;
+
+                log.debug("Sending encrypted data to: " + url + " (payload length: " + payload.length + ")");
+
+
+                HttpRequest req = HttpRequest.newBuilder()
+                        .uri(java.net.URI.create(url))
+                        .POST(HttpRequest.BodyPublishers.ofByteArray(payload))
+                        .header("Content-Type", "application/octet-stream")
+                        .header("x-api-key", config.apiKey)
+                        .header("User-Agent", "FishtrackerClient/1.0")
+                        .build();
+
+                client.post(req).join();
+
+            } catch (Exception e) {
+                log.error("Failed to send encrypted data", e);
+            }
+        });
+    }
+}
