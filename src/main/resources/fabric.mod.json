@@ -21,7 +21,7 @@
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}",
-    "petarlib": "v1.2",
-    "cloth-config": "20.0.149"
+    "petarlib": "${lib_version}",
+    "cloth-config": "${cloth_config_version}"
   }
 }
