@@ -2,9 +2,11 @@ package com.petarmc.fishtracker.client;
 
 import java.io.*;
 import java.util.Properties;
+import com.petarmc.lib.log.PLog;
 
 public class ConfigManager {
-        private static final File CONFIG_FILE = new File(System.getProperty("user.dir"), "fishtracker.properties");
+    private static final File CONFIG_FILE = new File(System.getProperty("user.dir"), "fishtracker.properties");
+    private static final PLog log = new PLog("ConfigManager");
 
     public String user = "";
     public String password = "";
@@ -12,6 +14,11 @@ public class ConfigManager {
     public String endpoint = "https://api.tracker.petarmc.com";
 
     public ConfigManager() {
+        if (CONFIG_FILE.exists()) {
+            load();
+        } else {
+            save();
+        }
     }
 
     public void load() {
@@ -19,12 +26,21 @@ public class ConfigManager {
         try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
             Properties p = new Properties();
             p.load(fis);
-            user = p.getProperty("user", "").trim();
-            password = p.getProperty("password", "").trim();
-            apiKey = p.getProperty("apiKey", "").trim();
-            endpoint = p.getProperty("endpoint", "").trim();
+            String v;
+
+            v = p.getProperty("user");
+            if (v != null && !v.trim().isEmpty()) user = v.trim();
+
+            v = p.getProperty("password");
+            if (v != null && !v.trim().isEmpty()) password = v.trim();
+
+            v = p.getProperty("apiKey");
+            if (v != null && !v.trim().isEmpty()) apiKey = v.trim();
+
+            v = p.getProperty("endpoint");
+            if (v != null && !v.trim().isEmpty()) endpoint = v.trim();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to load fishtracker.properties", e);
         }
     }
 
@@ -37,7 +53,7 @@ public class ConfigManager {
             p.setProperty("endpoint", endpoint);
             p.store(fos, "Fishtracker config");
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to save fishtracker.properties", e);
         }
     }
 
