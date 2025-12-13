@@ -140,22 +140,37 @@ public class FishtrackerClient implements ClientModInitializer {
 
     private void openConfigGui() {
         ConfigBuilder builder = ConfigBuilder.create().setTitle(Text.translatable("gui.fishtracker.title"));
+        builder.setParentScreen(MinecraftClient.getInstance().currentScreen);
         ConfigCategory general = builder.getOrCreateCategory(Text.translatable("gui.fishtracker.category.general"));
         ConfigEntryBuilder eb = builder.entryBuilder();
+        general.addEntry(eb.startTextDescription(Text.translatable("gui.fishtracker.description")).build());
 
         general.addEntry(eb.startStrField(Text.translatable("gui.fishtracker.field.username"), config.user)
-                .setSaveConsumer(val -> config.user = val.trim()).build());
-        general.addEntry(eb.startStrField(Text.translatable("gui.fishtracker.field.password"), config.password)
-                .setSaveConsumer(val -> config.password = val.trim()).build());
-        general.addEntry(eb.startStrField(Text.translatable("gui.fishtracker.field.api_key"), config.apiKey)
-                .setSaveConsumer(val -> config.apiKey = val.trim()).build());
-        general.addEntry(eb.startStrField(Text.translatable("gui.fishtracker.field.endpoint"), config.endpoint)
-                .setSaveConsumer(val -> config.endpoint = val.trim()).build());
+                .setSaveConsumer(val -> config.user = val == null ? "" : val.trim())
+                .setTooltip(Text.translatable("gui.fishtracker.tooltip.username"))
+                .build());
 
-        // Debug toggle
+        general.addEntry(eb.startStrField(Text.translatable("gui.fishtracker.field.password"), config.password)
+                .setSaveConsumer(val -> config.password = val == null ? "" : val.trim())
+                .setTooltip(Text.translatable("gui.fishtracker.tooltip.password"))
+                .build());
+
+        general.addEntry(eb.startStrField(Text.translatable("gui.fishtracker.field.api_key"), config.apiKey)
+                .setSaveConsumer(val -> config.apiKey = val == null ? "" : val.trim())
+                .setTooltip(Text.translatable("gui.fishtracker.tooltip.api_key"))
+                .build());
+
+        general.addEntry(eb.startStrField(Text.translatable("gui.fishtracker.field.endpoint"), config.endpoint)
+                .setSaveConsumer(val -> config.endpoint = val == null ? "" : val.trim())
+                .setTooltip(Text.translatable("gui.fishtracker.tooltip.endpoint"))
+                .build());
+
+        general.addEntry(eb.startTextDescription(Text.translatable("gui.fishtracker.section.debug")).build());
+
         general.addEntry(eb.startBooleanToggle(Text.translatable("gui.fishtracker.field.debug"), debugMode)
                 .setSaveConsumer(val -> debugMode = val)
                 .setDefaultValue(false)
+                .setTooltip(Text.translatable("gui.fishtracker.tooltip.debug"))
                 .build());
 
         builder.setSavingRunnable(() -> {

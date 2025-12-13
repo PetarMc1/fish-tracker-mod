@@ -5,6 +5,12 @@
   "gui.fishtracker.field.password": "Password",
   "gui.fishtracker.field.api_key": "API Key",
   "gui.fishtracker.field.endpoint": "Endpoint URL",
-  "gui.fishtracker.field.debug": "Debug Mode"
+  "gui.fishtracker.field.debug": "Debug Mode",
+  "gui.fishtracker.description": "Configure your Fishtracker account and network settings.",
+  "gui.fishtracker.section.debug": "Debug / Logging",
+  "gui.fishtracker.tooltip.username": "Your Fishtracker username (used to authenticate).",
+  "gui.fishtracker.tooltip.password": "Your Fishtracker password (stored locally).",
+  "gui.fishtracker.tooltip.api_key": "Optional API key for server access.",
+  "gui.fishtracker.tooltip.endpoint": "The server endpoint to send fish data to.",
+  "gui.fishtracker.tooltip.debug": "Enable verbose logging for debugging."
 }
-
