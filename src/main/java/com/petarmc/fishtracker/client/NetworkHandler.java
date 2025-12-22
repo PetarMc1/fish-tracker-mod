@@ -52,15 +52,18 @@ public class NetworkHandler {
                 return false;
             }
 
+            log.debug("Full key fetch response: " + resp);
             String respPreview = resp.length() > 400 ? resp.substring(0, 400) + "..." : resp;
             log.debug("Key fetch response preview: " + respPreview);
 
             String key = extractKeyFromResponse(resp);
+            log.debug("Extracted key: " + (key != null ? key : "null"));
             if (key == null) {
                 log.error("fernetKey not found in response. Response preview: " + (resp.length() > 200 ? resp.substring(0,200) + "..." : resp));
                 return false;
             }
             encryption.setKey(key);
+            log.debug("Fernet key set successfully");
             log.info("Fernet key loaded successfully");
             return true;
         } catch (Exception e) {
@@ -120,6 +123,7 @@ public class NetworkHandler {
 
                 client.post(req).join();
 
+                log.info("Data sent to " + path);
             } catch (Exception e) {
                 log.error("Failed to send encrypted data", e);
             }

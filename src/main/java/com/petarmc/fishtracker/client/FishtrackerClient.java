@@ -164,14 +164,29 @@ public class FishtrackerClient implements ClientModInitializer {
     private String getGamemode() {
         String brand = getServerType();
         if (brand.contains(" (Velocity)")) {
-            String gm = brand.substring(0, brand.indexOf(" (Velocity)")).toLowerCase();
-            return gm;
+            String part = brand.substring(0, brand.indexOf(" (Velocity)"));
+            String clean = stripColorCodes(part).toLowerCase();
+            return clean;
         }
         return null;
     }
 
+    private String getCleanServerName() {
+        String brand = getServerType();
+        if (brand.contains(" (Velocity)")) {
+            String part = brand.substring(0, brand.indexOf(" (Velocity)"));
+            return stripColorCodes(part);
+        }
+        return brand;
+    }
+
+    private String stripColorCodes(String s) {
+        return s.replaceAll("§[0-9a-fk-or]", "");
+    }
+
     private void openConfigGui() {
         network.setGamemode(getGamemode());
+        log.info("Current server: " + getCleanServerName() + ", gamemode: " + getGamemode());
         ConfigBuilder builder = ConfigBuilder.create().setTitle(Text.translatable("gui.fishtracker.title"));
         builder.setParentScreen(MinecraftClient.getInstance().currentScreen);
         ConfigCategory general = builder.getOrCreateCategory(Text.translatable("gui.fishtracker.category.general"));
