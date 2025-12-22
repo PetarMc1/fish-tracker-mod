@@ -6,6 +6,7 @@ import com.petarmc.lib.task.TaskScheduler;
 
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class NetworkHandler {
 
@@ -30,11 +31,15 @@ public class NetworkHandler {
     public boolean fetchKey() {
         try {
 
-            String url = config.endpoint + "/get/user/key?name=" + config.user + "&password=" + config.password;
+            String url = config.endpoint + "/get/user/key";
+
+            String credentials = config.user + ":" + config.password;
+            String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
 
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(java.net.URI.create(url))
                     .GET()
+                    .header("Authorization", "Basic " + encodedCredentials)
                     .header("x-api-key", config.apiKey)
                     .header("User-Agent", "FishtrackerClient/1.0")
                     .build();
