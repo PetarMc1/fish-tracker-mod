@@ -14,12 +14,17 @@ public class NetworkHandler {
     private final EncryptionManager encryption;
     private final HttpClientWrapper client;
     private final TaskScheduler scheduler;
+    private String gamemode = null;
 
     public NetworkHandler(ConfigManager config, EncryptionManager encryption) {
         this.config = config;
         this.encryption = encryption;
         this.client = new HttpClientWrapper(3);
         this.scheduler = new TaskScheduler(4);
+    }
+
+    public void setGamemode(String g) {
+        this.gamemode = g;
     }
 
     public boolean fetchKey() {
@@ -95,13 +100,18 @@ public class NetworkHandler {
                 log.debug("Sending encrypted data to: " + url + " (payload length: " + payload.length + ")");
 
 
-                HttpRequest req = HttpRequest.newBuilder()
+                HttpRequest.Builder reqBuilder = HttpRequest.newBuilder()
                         .uri(java.net.URI.create(url))
                         .POST(HttpRequest.BodyPublishers.ofByteArray(payload))
                         .header("Content-Type", "application/octet-stream")
                         .header("x-api-key", config.apiKey)
-                        .header("User-Agent", "FishtrackerClient/1.0")
-                        .build();
+                        .header("User-Agent", "FishtrackerClient/1.0");
+
+                if (gamemode != null) {
+                    reqBuilder.header("x-gamemode", gamemode);
+                }
+
+                HttpRequest req = reqBuilder.build();
 
                 client.post(req).join();
 

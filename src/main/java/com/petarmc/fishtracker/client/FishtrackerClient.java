@@ -138,7 +138,40 @@ public class FishtrackerClient implements ClientModInitializer {
         };
     }
 
+    private String getServerType() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.isInSingleplayer()) {
+            return "Integrated Server";
+        } else {
+            if (client.getNetworkHandler() != null) {
+                String brand = client.getNetworkHandler().getBrand();
+                if (brand != null && !brand.isEmpty()) {
+                    return brand;
+                } else {
+                    net.minecraft.client.network.ServerInfo server = client.getCurrentServerEntry();
+                    if (server != null) {
+                        return "Unknown (" + server.address + ")";
+                    } else {
+                        return "Not connected";
+                    }
+                }
+            } else {
+                return "Not connected";
+            }
+        }
+    }
+
+    private String getGamemode() {
+        String brand = getServerType();
+        if (brand.contains(" (Velocity)")) {
+            String gm = brand.substring(0, brand.indexOf(" (Velocity)")).toLowerCase();
+            return gm;
+        }
+        return null;
+    }
+
     private void openConfigGui() {
+        network.setGamemode(getGamemode());
         ConfigBuilder builder = ConfigBuilder.create().setTitle(Text.translatable("gui.fishtracker.title"));
         builder.setParentScreen(MinecraftClient.getInstance().currentScreen);
         ConfigCategory general = builder.getOrCreateCategory(Text.translatable("gui.fishtracker.category.general"));
