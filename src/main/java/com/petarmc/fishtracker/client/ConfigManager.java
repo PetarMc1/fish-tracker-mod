@@ -5,7 +5,7 @@ import java.util.Properties;
 import com.petarmc.lib.log.PLog;
 
 public class ConfigManager {
-    private static final File CONFIG_FILE = new File(System.getProperty("user.dir"), "fishtracker.properties");
+    private static final File CONFIG_FILE = new File(System.getProperty("user.dir"), "fishtracker.config");
     private static final PLog log = new PLog("ConfigManager");
 
     public String user = "";
@@ -14,14 +14,10 @@ public class ConfigManager {
     public String endpoint = "https://api.tracker.petarmc.com";
 
     public ConfigManager() {
-        if (CONFIG_FILE.exists()) {
-            load();
-        } else {
-            save();
-        }
+        save();
     }
 
-    public void load() {
+    private void loadUser() {
         if (!CONFIG_FILE.exists()) return;
         try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
             Properties p = new Properties();
@@ -40,7 +36,7 @@ public class ConfigManager {
             v = p.getProperty("endpoint");
             if (v != null && !v.trim().isEmpty()) endpoint = v.trim();
         } catch (IOException e) {
-            log.error("Failed to load fishtracker.properties", e);
+            log.error("Failed to load fishtracker.config", e);
         }
     }
 
@@ -55,6 +51,10 @@ public class ConfigManager {
         } catch (IOException e) {
             log.error("Failed to save fishtracker.properties", e);
         }
+    }
+
+    public void load() {
+        loadUser();
     }
 
     public boolean isComplete() {
