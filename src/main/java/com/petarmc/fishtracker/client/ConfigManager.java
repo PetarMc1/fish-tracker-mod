@@ -11,9 +11,14 @@ public class ConfigManager {
     public String user = "";
     public String password = "";
     public String apiKey = "";
-    public String endpoint = "https://api.tracker.petarmc.com";
+    public String endpoint = "";
 
     public ConfigManager() {
+        if (user.isEmpty() && password.isEmpty() && apiKey.isEmpty() && endpoint.isEmpty()) {
+            if (CONFIG_FILE.exists()) {
+                loadUser();
+            }
+        }
         save();
     }
 
