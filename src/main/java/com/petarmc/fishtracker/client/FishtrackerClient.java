@@ -102,7 +102,7 @@ public class FishtrackerClient implements ClientModInitializer {
         // Register exact crab message
         chatMatcher.registerExactMatch(
             "crab",
-            "You’ve hooked a Crab!",
+            "NIMBLE! You’ve hooked a Crab!",
             (message, matchId) -> {
                 if (debugMode) log.debug("Parsed crab: Crab");
                 else log.info("Caught crab: Crab");
