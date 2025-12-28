@@ -86,16 +86,16 @@ public class FishtrackerClient implements ClientModInitializer {
         // Register new entry pattern
         chatMatcher.registerPattern(
             "new_entry",
-            "NEW ENTRY! You caught (?:a|an) (.+?) for the first time[.!]",
+            "NEW ENTRY! You caught (?:a|an) ([^ ]+) (.+?) for the first time[.!]",
             Pattern.CASE_INSENSITIVE,
             match -> {
-                String entry = match.getGroup(1).trim();
-                int rarity = mapNewEntry(entry);
+                String rarity = match.getGroup(1).trim();
+                String name = match.getGroup(2).trim();
 
-                if (debugMode) log.debug("Parsed new entry: " + entry + ", rarity: " + rarity);
-                else log.info("New entry: " + entry);
+                if (debugMode) log.debug("Parsed new entry: " + rarity + " " + name);
+                else log.info("New entry: " + rarity + " " + name);
 
-                network.send("fish", "{\"fish\":\"" + entry + "\",\"rarity\":" + rarity + "}");
+                network.send("fish", "{\"rarity\":\"" + rarity + "\",\"name\":\"" + name + "\"}");
             }
         );
 
@@ -120,20 +120,6 @@ public class FishtrackerClient implements ClientModInitializer {
             case "EPIC" -> 4;
             case "LEGENDARY" -> 6;
             case "INSANE" -> 7;
-            default -> 5;
-        };
-    }
-
-    private int mapNewEntry(String entry) {
-        String[] parts = entry.split(" ", 2);
-        if (parts.length == 0) return 5;
-        return switch (parts[0].toUpperCase()) {
-            case "BRONZE" -> 1;
-            case "SILVER" -> 2;
-            case "GOLD" -> 3;
-            case "DIAMOND" -> 4;
-            case "PLATINUM" -> 6;
-            case "MYTHICAL" -> 7;
             default -> 5;
         };
     }
