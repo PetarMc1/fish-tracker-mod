@@ -77,7 +77,7 @@ public class FishtrackerClient implements ClientModInitializer {
             "(EPIC|GREAT|NICE|GOOD|LEGENDARY|INSANE)? ?CATCH! (?:Your Augments caught|You caught) (?:a|an) ([^!]+?)(?: with a length of [\\d.]+cm)?[.!]",
             Pattern.CASE_INSENSITIVE,
             match -> {
-                String rarityKey = match.getGroup(1) != null ? match.getGroup(1).toUpperCase() : "";
+                String rarityKey = match.getGroup(1);
                 String fish = match.getGroup(2).trim();
                 int rarity = mapRarity(rarityKey);
 
@@ -93,12 +93,13 @@ public class FishtrackerClient implements ClientModInitializer {
             "NEW ENTRY! You caught (?:a|an) ([^ ]+) (.+?) for the first time[.!]",
             Pattern.CASE_INSENSITIVE,
             match -> {
-                String rarity = match.getGroup(1).trim();
-                String name = match.getGroup(2).trim();
+                String rarityKey = match.getGroup(1);
+                String fish = match.getGroup(2).trim();
+                int rarity = mapRarity(rarityKey);
 
-                log.debug("New entry: " + rarity + " " + name);
+                log.debug("New entry: " + rarityKey + " " + fish);
 
-                network.send("fish", "{\"rarity\":\"" + rarity + "\",\"name\":\"" + name + "\"}");
+                network.send("fish", "{\"fish\":\"" + fish + "\",\"rarity\":" + rarity + "}");
             }
         );
 
@@ -122,6 +123,12 @@ public class FishtrackerClient implements ClientModInitializer {
             case "EPIC" -> 4;
             case "LEGENDARY" -> 6;
             case "INSANE" -> 7;
+            case "Bronze" -> 1;
+            case "Silver" -> 2;
+            case "Gold" -> 3;
+            case "Diamond" -> 4;
+            case "Platinum" -> 6;
+            case "Mythical" -> 7;
             default -> 5;
         };
     }
