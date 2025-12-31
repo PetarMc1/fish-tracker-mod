@@ -52,12 +52,9 @@ public class NetworkHandler {
                 return false;
             }
 
-            log.debug("Full key fetch response: " + resp);
             String respPreview = resp.length() > 400 ? resp.substring(0, 400) + "..." : resp;
-            log.debug("Key fetch response preview: " + respPreview);
 
             String key = extractKeyFromResponse(resp);
-            log.debug("Extracted key: " + (key != null ? key : "null"));
             if (key == null) {
                 log.error("fernetKey not found in response. Response preview: " + (resp.length() > 200 ? resp.substring(0,200) + "..." : resp));
                 return false;
@@ -76,8 +73,7 @@ public class NetworkHandler {
         if (resp == null) return null;
 
         java.util.regex.Pattern[] patterns = new java.util.regex.Pattern[]{
-                java.util.regex.Pattern.compile("\"fernetKey\"\\s*:\\s*\"([^\"]+)\""),
-                java.util.regex.Pattern.compile("\"key\"\\s*:\\s*\"([^\"]+)\"")
+                java.util.regex.Pattern.compile("\"fernetKey\"\\s*:\\s*\"([^\"]+)\"")
         };
 
         for (java.util.regex.Pattern p : patterns) {
