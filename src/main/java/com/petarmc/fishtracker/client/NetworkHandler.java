@@ -119,7 +119,8 @@ public class NetworkHandler {
 
                 client.post(req).join();
 
-                log.info("Data sent to " + path);
+                log.info("Data successfully sent to" + gamemode + "gamemode");
+                log.debug("Data sent to " + path + "with x-gamemode: " + gamemode);
             } catch (Exception e) {
                 log.error("Failed to send encrypted data", e);
             }
