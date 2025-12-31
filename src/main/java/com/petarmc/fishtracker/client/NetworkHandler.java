@@ -115,9 +115,13 @@ public class NetworkHandler {
                 HttpRequest req = reqBuilder.build();
 
                 client.post(req).join();
+                if (config.debugMode) {
+                    log.debug("Data sent to " + path + "with x-gamemode: " + gamemode);
+                } else {
+                    log.info("Data successfully sent to " + gamemode + " gamemode");
+                }
 
-                log.info("Data successfully sent to" + gamemode + "gamemode");
-                log.debug("Data sent to " + path + "with x-gamemode: " + gamemode);
+
             } catch (Exception e) {
                 log.error("Failed to send encrypted data", e);
             }

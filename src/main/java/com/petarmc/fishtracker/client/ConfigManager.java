@@ -12,6 +12,7 @@ public class ConfigManager {
     public String password = "";
     public String apiKey = "";
     public String endpoint = "";
+    public boolean debugMode = false;
 
     public ConfigManager() {
         if (user.isEmpty() && password.isEmpty() && apiKey.isEmpty() && endpoint.isEmpty()) {
@@ -40,6 +41,9 @@ public class ConfigManager {
 
             v = p.getProperty("endpoint");
             if (v != null && !v.trim().isEmpty()) endpoint = v.trim();
+
+            v = p.getProperty("debugMode");
+            if (v != null) debugMode = Boolean.parseBoolean(v.trim());
         } catch (IOException e) {
             log.error("Failed to load fishtracker.config", e);
         }
