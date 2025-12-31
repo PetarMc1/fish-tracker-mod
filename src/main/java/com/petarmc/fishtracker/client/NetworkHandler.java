@@ -52,8 +52,6 @@ public class NetworkHandler {
                 return false;
             }
 
-            String respPreview = resp.length() > 400 ? resp.substring(0, 400) + "..." : resp;
-
             String key = extractKeyFromResponse(resp);
             if (key == null) {
                 log.error("fernetKey not found in response. Response preview: " + (resp.length() > 200 ? resp.substring(0,200) + "..." : resp));
