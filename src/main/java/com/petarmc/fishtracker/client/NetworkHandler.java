@@ -60,7 +60,6 @@ public class NetworkHandler {
                 return false;
             }
             encryption.setKey(key);
-            log.debug("Fernet key set successfully");
             log.info("Fernet key loaded successfully");
             return true;
         } catch (Exception e) {

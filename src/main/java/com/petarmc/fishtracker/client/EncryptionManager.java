@@ -72,9 +72,6 @@ public class EncryptionManager {
         finalToken.put(tokenBytes);
         finalToken.put(hmacBytes);
 
-        String encoded = Base64.getUrlEncoder().withoutPadding().encodeToString(finalToken.array());
-        log.debug("Encrypted JSON → " + encoded);
-
-        return encoded;
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(finalToken.array());
     }
 }

@@ -76,8 +76,7 @@ public class FishtrackerClient implements ClientModInitializer {
                 String fish = match.getGroup(2).trim();
                 int rarity = mapRarity(rarityKey);
 
-                if (debugMode) log.debug("Parsed fish: " + fish + ", rarity: " + rarity);
-                else log.info("Caught fish: " + fish);
+                log.debug("Caught fish: " + fish);
 
                 network.send("fish", "{\"fish\":\"" + fish + "\",\"rarity\":" + rarity + "}");
             }
@@ -92,8 +91,7 @@ public class FishtrackerClient implements ClientModInitializer {
                 String rarity = match.getGroup(1).trim();
                 String name = match.getGroup(2).trim();
 
-                if (debugMode) log.debug("Parsed new entry: " + rarity + " " + name);
-                else log.info("New entry: " + rarity + " " + name);
+                log.debug("New entry: " + rarity + " " + name);
 
                 network.send("fish", "{\"rarity\":\"" + rarity + "\",\"name\":\"" + name + "\"}");
             }
@@ -104,8 +102,7 @@ public class FishtrackerClient implements ClientModInitializer {
             "crab",
             "NIMBLE! You’ve hooked a Crab!",
             (message, matchId) -> {
-                if (debugMode) log.debug("Parsed crab: Crab");
-                else log.info("Caught crab: Crab");
+                log.debug("Caught crab: Crab");
 
                 network.send("crab", "{\"fish\":\"crab\"}");
             }
