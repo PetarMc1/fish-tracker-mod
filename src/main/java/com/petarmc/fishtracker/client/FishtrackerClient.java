@@ -7,6 +7,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -25,8 +26,7 @@ public class FishtrackerClient implements ClientModInitializer {
     private NetworkHandler network;
     private KeyBinding openGuiKey;
     private final ChatPatternMatcher chatMatcher = new ChatPatternMatcher();
-
-    private boolean debugMode = false;
+    private boolean debugMode = config.debugMode;
 
 
     @Override
@@ -59,6 +59,11 @@ public class FishtrackerClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openGuiKey.wasPressed()) openConfigGui();
+        });
+
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            String gamemode = getGamemode();
+            network.setGamemode(gamemode);
         });
 
         LogConfig.globalLevel = debugMode ? com.petarmc.lib.log.LogLevel.DEBUG : com.petarmc.lib.log.LogLevel.INFO;
