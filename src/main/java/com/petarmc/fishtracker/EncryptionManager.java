@@ -1,4 +1,4 @@
-package com.petarmc.fishtracker.client;
+package com.petarmc.fishtracker;
 
 import com.petarmc.lib.log.PLog;
 
@@ -15,7 +15,6 @@ import java.util.Base64;
 public class EncryptionManager {
 
     private static final PLog log = new PLog("EncryptionManager");
-
     private byte[] signingKey;
     private byte[] encryptionKey;
     private final SecureRandom rng = new SecureRandom();
@@ -67,7 +66,6 @@ public class EncryptionManager {
         hmac.init(new SecretKeySpec(signingKey, "HmacSHA256"));
         byte[] hmacBytes = hmac.doFinal(tokenBytes);
 
-        // final token = token + hmac
         ByteBuffer finalToken = ByteBuffer.allocate(tokenBytes.length + 32);
         finalToken.put(tokenBytes);
         finalToken.put(hmacBytes);

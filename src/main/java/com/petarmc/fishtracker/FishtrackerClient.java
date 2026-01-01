@@ -1,8 +1,9 @@
-package com.petarmc.fishtracker.client;
+package com.petarmc.fishtracker;
 
 import com.petarmc.lib.log.LogConfig;
 import com.petarmc.lib.log.PLog;
 import com.petarmc.lib.chat.ChatPatternMatcher;
+import com.petarmc.lib.notification.NotificationManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
@@ -40,16 +41,13 @@ public class FishtrackerClient implements ClientModInitializer {
             log.warn("Failed to fetch Fernet key — check config");
         }
 
-        // Initialize chat patterns
         initializeChatPatterns();
 
-        // Chat message listeners
         ClientReceiveMessageEvents.CHAT.register((msg, signed, sender, params, ts) ->
             chatMatcher.processMessage(msg.getString()));
         ClientReceiveMessageEvents.GAME.register((msg, overlay) ->
             chatMatcher.processMessage(msg.getString()));
 
-        // Keybinding
         openGuiKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.fishtracker.opengui",
                 InputUtil.Type.KEYSYM,
@@ -71,7 +69,6 @@ public class FishtrackerClient implements ClientModInitializer {
     }
 
     private void initializeChatPatterns() {
-        // Register fish catch pattern
         chatMatcher.registerPattern(
             "fish_catch",
             "(EPIC|GREAT|NICE|GOOD|LEGENDARY|INSANE)? ?CATCH! (?:Your Augments caught|You caught) (?:a|an) ([^!]+?)(?: with a length of [\\d.]+cm)?[.!]",
@@ -82,12 +79,14 @@ public class FishtrackerClient implements ClientModInitializer {
                 int rarity = mapRarity(rarityKey);
 
                 log.debug("Caught fish: " + fish);
+                if (debugMode){
+                    NotificationManager.showInfo("Caught fish: " + fish + " (Rarity: " + rarity + ")");
+                }
 
                 network.send("fish", "{\"fish\":\"" + fish + "\",\"rarity\":" + rarity + "}");
             }
         );
 
-        // Register new entry pattern
         chatMatcher.registerPattern(
             "new_entry",
             "NEW ENTRY! You caught (?:a|an) ([^ ]+) (.+?) for the first time[.!]",
@@ -98,6 +97,9 @@ public class FishtrackerClient implements ClientModInitializer {
                 int rarity = mapRarity(rarityKey);
 
                 log.debug("New entry: " + rarityKey + " " + fish);
+                if (debugMode){
+                    NotificationManager.showInfo("New entry: " + fish + " (Rarity: " + rarity + ")");
+                }
 
                 network.send("fish", "{\"fish\":\"" + fish + "\",\"rarity\":" + rarity + "}");
             }
@@ -109,6 +111,9 @@ public class FishtrackerClient implements ClientModInitializer {
             "NIMBLE! You’ve hooked a Crab!",
             (message, matchId) -> {
                 log.debug("Caught crab: Crab");
+                if (debugMode){
+                    NotificationManager.showInfo("Caught crab.");
+                }
 
                 network.send("crab", "{\"fish\":\"crab\"}");
             }
@@ -117,18 +122,12 @@ public class FishtrackerClient implements ClientModInitializer {
 
     private int mapRarity(String key) {
         return switch (key) {
-            case "GOOD" -> 1;
-            case "NICE" -> 2;
-            case "GREAT" -> 3;
-            case "EPIC" -> 4;
-            case "LEGENDARY" -> 6;
-            case "INSANE" -> 7;
-            case "Bronze" -> 1;
-            case "Silver" -> 2;
-            case "Gold" -> 3;
-            case "Diamond" -> 4;
-            case "Platinum" -> 6;
-            case "Mythical" -> 7;
+            case "GOOD", "Bronze" -> 1;
+            case "NICE", "Silver" -> 2;
+            case "GREAT", "Gold" -> 3;
+            case "EPIC", "Diamond" -> 4;
+            case "LEGENDARY", "Platinum" -> 6;
+            case "INSANE", "Mythical" -> 7;
             default -> 5;
         };
     }
@@ -180,8 +179,12 @@ public class FishtrackerClient implements ClientModInitializer {
     }
 
     private void openConfigGui() {
+        debugMode = config.debugMode;
         network.setGamemode(getGamemode());
         log.info("Current server: " + getCleanServerName() + ", gamemode: " + getGamemode());
+        if (debugMode){
+            NotificationManager.showInfo("Current server: " + getCleanServerName() + ", gamemode: " + getGamemode());
+        }
         ConfigBuilder builder = ConfigBuilder.create().setTitle(Text.translatable("gui.fishtracker.title"));
         builder.setParentScreen(MinecraftClient.getInstance().currentScreen);
         ConfigCategory general = builder.getOrCreateCategory(Text.translatable("gui.fishtracker.category.general"));
@@ -217,6 +220,7 @@ public class FishtrackerClient implements ClientModInitializer {
                 .build());
 
         builder.setSavingRunnable(() -> {
+            config.debugMode = debugMode;
             config.save();
             if (config.isComplete()) network.fetchKey();
             LogConfig.globalLevel = debugMode ? com.petarmc.lib.log.LogLevel.DEBUG : com.petarmc.lib.log.LogLevel.INFO;

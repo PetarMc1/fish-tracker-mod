@@ -1,8 +1,9 @@
-package com.petarmc.fishtracker.client;
+package com.petarmc.fishtracker;
 
 import java.io.*;
 import java.util.Properties;
 import com.petarmc.lib.log.PLog;
+import com.petarmc.lib.notification.NotificationManager;
 
 public class ConfigManager {
     private static final File CONFIG_FILE = new File(System.getProperty("user.dir"), "fishtracker.config");
@@ -59,6 +60,9 @@ public class ConfigManager {
             p.store(fos, "Fishtracker config");
         } catch (IOException e) {
             log.error("Failed to save fishtracker.properties", e);
+            if (debugMode){
+                NotificationManager.showError("Failed to save fishtracker.config");
+            }
         }
     }
 

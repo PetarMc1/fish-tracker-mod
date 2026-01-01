@@ -1,7 +1,8 @@
-package com.petarmc.fishtracker.client;
+package com.petarmc.fishtracker;
 
 import com.petarmc.lib.log.PLog;
 import com.petarmc.lib.net.HttpClientWrapper;
+import com.petarmc.lib.notification.NotificationManager;
 import com.petarmc.lib.task.TaskScheduler;
 
 import java.net.http.HttpRequest;
@@ -49,19 +50,25 @@ public class NetworkHandler {
             String resp = client.post(req).join();
             if (resp == null) {
                 log.error("Empty response when fetching key");
+                NotificationManager.showError("Empty response when fetching Fernet key. Check your configuration.");
                 return false;
             }
 
             String key = extractKeyFromResponse(resp);
             if (key == null) {
                 log.error("fernetKey not found in response. Response preview: " + (resp.length() > 200 ? resp.substring(0,200) + "..." : resp));
+                NotificationManager.showError("Fernet key not found in response. Check your configuration.");
                 return false;
             }
             encryption.setKey(key);
             log.info("Fernet key loaded successfully");
+            if (config.debugMode){
+                NotificationManager.showInfo("Fernet key loaded successfully");
+            }
             return true;
         } catch (Exception e) {
             log.error("Failed to fetch key", e);
+            NotificationManager.showError("Failed to fetch Fernet key: " + e.getMessage());
             return false;
         }
     }
@@ -117,6 +124,9 @@ public class NetworkHandler {
                 client.post(req).join();
                 if (config.debugMode) {
                     log.debug("Data sent to " + path + "with x-gamemode: " + gamemode);
+                    if (config.debugMode){
+                        NotificationManager.showInfo("Data sent to " + path + " with x-gamemode: " + gamemode);
+                    }
                 } else {
                     log.info("Data successfully sent to " + gamemode + " gamemode");
                 }
@@ -124,6 +134,7 @@ public class NetworkHandler {
 
             } catch (Exception e) {
                 log.error("Failed to send encrypted data", e);
+                NotificationManager.showError("Failed to send data: " + e.getMessage());
             }
         });
     }

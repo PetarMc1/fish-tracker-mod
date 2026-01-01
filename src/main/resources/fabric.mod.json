@@ -11,10 +11,7 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "com.petarmc.fishtracker.client.FishtrackerClient"
-    ],
-    "main": [
-      "com.petarmc.fishtracker.Fishtracker"
+      "com.petarmc.fishtracker.FishtrackerClient"
     ]
   },
   "depends": {
