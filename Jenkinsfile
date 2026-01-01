@@ -12,6 +12,7 @@ pipeline {
         stage('Build All Versions') {
             steps {
                 script {
+                    sh 'chmod +x gradlew'
                     def buildNumberProp = "${env.BUILD_NUMBER}"
                     sh "./gradlew buildAllVersions -PbuildNumber=${buildNumberProp}"
                 }
