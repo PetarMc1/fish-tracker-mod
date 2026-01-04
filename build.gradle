@@ -88,7 +88,7 @@ tasks.register('buildAllVersions') {
             if (hasBuildNumber) {
                 return "${modName}-mc${mcVersion}-${buildNumber}.jar"
             } else {
-                return "${modName}-mc${mcVersion}-v${modVersion}-build${buildNumber}.jar"
+                return "${modName}-mc${mcVersion}-v${modVersion}.jar"
             }
         }
 
