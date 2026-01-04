@@ -62,6 +62,10 @@ public class FishtrackerClient implements ClientModInitializer {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             String gamemode = getGamemode();
             network.setGamemode(gamemode);
+            log.info("Current server: " + getCleanServerName() + ", gamemode: " + gamemode);
+            if (debugMode){
+                NotificationManager.showInfo("Current server: " + getCleanServerName() + ", gamemode: " + gamemode);
+            }
         });
 
         LogConfig.globalLevel = debugMode ? com.petarmc.lib.log.LogLevel.DEBUG : com.petarmc.lib.log.LogLevel.INFO;
