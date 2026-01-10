@@ -12,6 +12,9 @@
   "entrypoints": {
     "client": [
       "com.petarmc.fishtracker.FishtrackerClient"
+    ],
+    "modmenu": [
+      "com.petarmc.fishtracker.integration.ModMenuIntegration"
     ]
   },
   "depends": {
@@ -20,5 +23,8 @@
     "minecraft": "${minecraft_version}",
     "petarlib": ">=${lib_version}",
     "cloth-config": "${cloth_config_version}"
+  },
+  "suggests": {
+    "modmenu": "${modmenu_version}"
   }
 }

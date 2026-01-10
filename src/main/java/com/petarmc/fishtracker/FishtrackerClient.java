@@ -15,11 +15,13 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import me.shedaniel.clothconfig2.api.*;
+import net.minecraft.client.gui.screen.Screen;
 
 import java.util.regex.Pattern;
 
 public class FishtrackerClient implements ClientModInitializer {
 
+    public static FishtrackerClient INSTANCE;
     private static final PLog log = new PLog("FishtrackerClient");
 
     private final ConfigManager config = new ConfigManager();
@@ -32,6 +34,7 @@ public class FishtrackerClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        INSTANCE = this;
         LogConfig.globalPrefix = "[FishTracker]";
 
         config.load();
@@ -183,6 +186,10 @@ public class FishtrackerClient implements ClientModInitializer {
     }
 
     private void openConfigGui() {
+        MinecraftClient.getInstance().setScreen(createConfigScreen(MinecraftClient.getInstance().currentScreen));
+    }
+
+    public Screen createConfigScreen(Screen parent) {
         debugMode = config.debugMode;
         network.setGamemode(getGamemode());
         log.info("Current server: " + getCleanServerName() + ", gamemode: " + getGamemode());
@@ -190,7 +197,7 @@ public class FishtrackerClient implements ClientModInitializer {
             NotificationManager.showInfo("Current server: " + getCleanServerName() + ", gamemode: " + getGamemode());
         }
         ConfigBuilder builder = ConfigBuilder.create().setTitle(Text.translatable("gui.fishtracker.title"));
-        builder.setParentScreen(MinecraftClient.getInstance().currentScreen);
+        builder.setParentScreen(parent);
         ConfigCategory general = builder.getOrCreateCategory(Text.translatable("gui.fishtracker.category.general"));
         ConfigEntryBuilder eb = builder.entryBuilder();
         general.addEntry(eb.startTextDescription(Text.translatable("gui.fishtracker.description")).build());
@@ -230,6 +237,6 @@ public class FishtrackerClient implements ClientModInitializer {
             LogConfig.globalLevel = debugMode ? com.petarmc.lib.log.LogLevel.DEBUG : com.petarmc.lib.log.LogLevel.INFO;
         });
 
-        MinecraftClient.getInstance().setScreen(builder.build());
+        return builder.build();
     }
 }
