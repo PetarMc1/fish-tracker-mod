@@ -98,7 +98,7 @@ tasks.register('buildAllVersions') {
         def builds = []
 
         def defaultId = 'default'
-        def defaultLabel = "Default (Minecraft ${project.minecraft_version})"
+        def defaultLabel = "Default (Minecraft ${project.minecraft_version} ClothConfig ${project.cloth_config_ver} ModMenu ${project.modmenu_version})"
         def defaultCmd = "${gradleScript} build -PbuildDir=build/${defaultId}"
         builds.add([id: defaultId, mcVersion: project.minecraft_version, fabricVersion: project.fabric_version, cmd: defaultCmd, label: defaultLabel])
 
@@ -108,13 +108,17 @@ tasks.register('buildAllVersions') {
 
             def mcVersion = props.getProperty('minecraft_version')
             def fabricVersion = props.getProperty('fabric_version')
+            def clothVersion = props.getProperty('cloth_config_ver')
+            def modmenuVersion = props.getProperty('modmenu_version')
             def id = mcVersion
-            def label = "Minecraft ${mcVersion} (Fabric ${fabricVersion})"
+            def label = "Minecraft ${mcVersion} (Fabric ${fabricVersion} ClothConfig ${clothVersion} ModMenu ${modmenuVersion})"
             def cmd = "${gradleScript} build -PbuildDir=build/${id} " +
                     "-Pminecraft_version=${mcVersion} " +
                     "-Pyarn_mappings=${props.getProperty('yarn_mappings')} " +
                     "-Ploader_version=${props.getProperty('loader_version')} " +
-                    "-Pfabric_version=${fabricVersion}"
+                    "-Pfabric_version=${fabricVersion} " +
+                    "-Pcloth_config_ver=${clothVersion} " +
+                    "-Pmodmenu_version=${modmenuVersion}"
             builds.add([id: id, mcVersion: mcVersion, fabricVersion: fabricVersion, cmd: cmd, label: label])
         }
 
