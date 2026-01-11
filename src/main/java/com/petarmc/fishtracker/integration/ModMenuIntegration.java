@@ -9,7 +9,6 @@ public class ModMenuIntegration implements ModMenuApi {
 
     @Override
     public ConfigScreenFactory<Screen> getModConfigScreenFactory() {
-        // Return a factory that builds the config screen when Mod Menu is present
         return parent -> {
             if (FishtrackerClient.INSTANCE != null) {
                 return FishtrackerClient.INSTANCE.createConfigScreen(parent);

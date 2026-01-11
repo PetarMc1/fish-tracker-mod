@@ -5,7 +5,10 @@
   "name": "FishTracker",
   "description": "A mod that tracks your caught fish on CosmosMc and sends them to an API",
   "authors": ["Petar_mc"],
-  "contact": {},
+  "contact": {
+    "homepage": "https://tracker.petarmc.com/mod",
+    "issues": "https://github.com/PetarMc1/fish-tracker/issues"
+  },
   "license": "MIT",
   "icon": "assets/fishtracker/icon.png",
   "environment": "client",
@@ -26,5 +29,15 @@
   },
   "suggests": {
     "modmenu": "${modmenu_version}"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.website": "https://tracker.petarmc.com/mod",
+        "modmenu.issues": "https://github.com/PetarMc1/fish-tracker/issues",
+        "modmenu.source": "https://github.com/PetarMc1/fish-tracker"
+      },
+      "update_checker": true
+    }
   }
 }
