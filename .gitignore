@@ -32,3 +32,4 @@ Thumbs.db
 # Maven repository
 .mvn/
 target/
+/run
