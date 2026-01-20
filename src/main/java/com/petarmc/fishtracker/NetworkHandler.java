@@ -4,14 +4,13 @@ import com.petarmc.lib.log.PLog;
 import com.petarmc.lib.net.HttpClientWrapper;
 import com.petarmc.lib.notification.NotificationManager;
 import com.petarmc.lib.task.TaskScheduler;
-
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-
+import static com.petarmc.fishtracker.FishtrackerClient.GlobalPrefix;
 public class NetworkHandler {
 
-    private static final PLog log = new PLog("NetworkHandler");
+    private static final PLog log = new PLog("NetworkHandler", GlobalPrefix);
     private final ConfigManager config;
     private final EncryptionManager encryption;
     private final HttpClientWrapper client;
@@ -50,25 +49,25 @@ public class NetworkHandler {
             String resp = client.post(req).join();
             if (resp == null) {
                 log.error("Empty response when fetching key");
-                NotificationManager.showError("Empty response when fetching Fernet key. Check your configuration.");
+                NotificationManager.showError("Empty response when fetching Fernet key. Check your configuration.", GlobalPrefix);
                 return false;
             }
 
             String key = extractKeyFromResponse(resp);
             if (key == null) {
                 log.error("fernetKey not found in response. Response preview: " + (resp.length() > 200 ? resp.substring(0,200) + "..." : resp));
-                NotificationManager.showError("Fernet key not found in response. Check your configuration.");
+                NotificationManager.showError("Fernet key not found in response. Check your configuration.", GlobalPrefix);
                 return false;
             }
             encryption.setKey(key);
             log.info("Fernet key loaded successfully");
             if (config.debugMode){
-                NotificationManager.showInfo("Fernet key loaded successfully");
+                NotificationManager.showInfo("Fernet key loaded successfully", GlobalPrefix);
             }
             return true;
         } catch (Exception e) {
             log.error("Failed to fetch key", e);
-            NotificationManager.showError("Failed to fetch Fernet key: " + e.getMessage());
+            NotificationManager.showError("Failed to fetch Fernet key: " + e.getMessage(), GlobalPrefix);
             return false;
         }
     }
@@ -125,7 +124,7 @@ public class NetworkHandler {
                 if (config.debugMode) {
                     log.debug("Data sent to " + path + "with x-gamemode: " + gamemode);
                     if (config.debugMode){
-                        NotificationManager.showInfo("Data sent to " + path + " with x-gamemode: " + gamemode);
+                        NotificationManager.showInfo("Data sent to " + path + " with x-gamemode: " + gamemode, GlobalPrefix);
                     }
                 } else {
                     log.info("Data successfully sent to " + gamemode + " gamemode");
@@ -134,7 +133,7 @@ public class NetworkHandler {
 
             } catch (Exception e) {
                 log.error("Failed to send encrypted data", e);
-                NotificationManager.showError("Failed to send data: " + e.getMessage());
+                NotificationManager.showError("Failed to send data: " + e.getMessage(), GlobalPrefix);
             }
         });
     }

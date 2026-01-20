@@ -1,7 +1,6 @@
 package com.petarmc.fishtracker;
 
 import com.petarmc.lib.log.PLog;
-
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
@@ -11,10 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
+import static com.petarmc.fishtracker.FishtrackerClient.GlobalPrefix;
 
 public class EncryptionManager {
-
-    private static final PLog log = new PLog("EncryptionManager");
+    private static final PLog log = new PLog("EncryptionManager", GlobalPrefix);
     private byte[] signingKey;
     private byte[] encryptionKey;
     private final SecureRandom rng = new SecureRandom();

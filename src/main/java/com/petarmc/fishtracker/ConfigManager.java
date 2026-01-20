@@ -4,11 +4,10 @@ import java.io.*;
 import java.util.Properties;
 import com.petarmc.lib.log.PLog;
 import com.petarmc.lib.notification.NotificationManager;
-
+import static com.petarmc.fishtracker.FishtrackerClient.GlobalPrefix;
 public class ConfigManager {
     private static final File CONFIG_FILE = new File(System.getProperty("user.dir"), "fishtracker.config");
-    private static final PLog log = new PLog("ConfigManager");
-
+    private static final PLog log = new PLog("ConfigManager", GlobalPrefix);
     public String user = "";
     public String password = "";
     public String apiKey = "";
@@ -61,7 +60,7 @@ public class ConfigManager {
         } catch (IOException e) {
             log.error("Failed to save fishtracker.properties", e);
             if (debugMode){
-                NotificationManager.showError("Failed to save fishtracker.config");
+                NotificationManager.showError("Failed to save fishtracker.config", GlobalPrefix);
             }
         }
     }

@@ -21,21 +21,18 @@ import java.util.regex.Pattern;
 
 public class FishtrackerClient implements ClientModInitializer {
 
+    public static String GlobalPrefix = "[Fishtracker]";
     public static FishtrackerClient INSTANCE;
-    private static final PLog log = new PLog("FishtrackerClient");
-
+    private static final PLog log = new PLog("FishtrackerClient", GlobalPrefix);
     private final ConfigManager config = new ConfigManager();
     private final EncryptionManager encryption = new EncryptionManager();
     private NetworkHandler network;
     private KeyBinding openGuiKey;
     private final ChatPatternMatcher chatMatcher = new ChatPatternMatcher();
     private boolean debugMode = config.debugMode;
-
-
     @Override
     public void onInitializeClient() {
         INSTANCE = this;
-        LogConfig.globalPrefix = "[FishTracker]";
 
         config.load();
         network = new NetworkHandler(config, encryption);
@@ -67,7 +64,7 @@ public class FishtrackerClient implements ClientModInitializer {
             network.setGamemode(gamemode);
             log.info("Current server: " + getCleanServerName() + ", gamemode: " + gamemode);
             if (debugMode){
-                NotificationManager.showInfo("Current server: " + getCleanServerName() + ", gamemode: " + gamemode);
+                NotificationManager.showInfo("Current server: " + getCleanServerName() + ", gamemode: " + gamemode, GlobalPrefix);
             }
         });
 
@@ -87,7 +84,7 @@ public class FishtrackerClient implements ClientModInitializer {
 
                 log.debug("Caught fish: " + fish);
                 if (debugMode){
-                    NotificationManager.showInfo("Caught fish: " + fish + " (Rarity: " + rarity + ")");
+                    NotificationManager.showInfo("Caught fish: " + fish + " (Rarity: " + rarity + ")", GlobalPrefix);
                 }
 
                 network.send("fish", "{\"fish\":\"" + fish + "\",\"rarity\":" + rarity + "}");
@@ -105,7 +102,7 @@ public class FishtrackerClient implements ClientModInitializer {
 
                 log.debug("New entry: " + rarityKey + " " + fish);
                 if (debugMode){
-                    NotificationManager.showInfo("New entry: " + fish + " (Rarity: " + rarity + ")");
+                    NotificationManager.showInfo("New entry: " + fish + " (Rarity: " + rarity + ")", GlobalPrefix);
                 }
 
                 network.send("fish", "{\"fish\":\"" + fish + "\",\"rarity\":" + rarity + "}");
@@ -119,7 +116,7 @@ public class FishtrackerClient implements ClientModInitializer {
             (message, matchId) -> {
                 log.debug("Caught crab: Crab");
                 if (debugMode){
-                    NotificationManager.showInfo("Caught crab.");
+                    NotificationManager.showInfo("Caught crab.", GlobalPrefix);
                 }
 
                 network.send("crab", "{\"fish\":\"crab\"}");
@@ -194,7 +191,7 @@ public class FishtrackerClient implements ClientModInitializer {
         network.setGamemode(getGamemode());
         log.info("Current server: " + getCleanServerName() + ", gamemode: " + getGamemode());
         if (debugMode){
-            NotificationManager.showInfo("Current server: " + getCleanServerName() + ", gamemode: " + getGamemode());
+            NotificationManager.showInfo("Current server: " + getCleanServerName() + ", gamemode: " + getGamemode(), GlobalPrefix);
         }
         ConfigBuilder builder = ConfigBuilder.create().setTitle(Text.translatable("gui.fishtracker.title"));
         builder.setParentScreen(parent);
