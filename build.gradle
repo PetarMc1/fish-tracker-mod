@@ -1,6 +1,7 @@
 plugins {
     id 'fabric-loom' version '1.14-SNAPSHOT'
     id 'maven-publish'
+    id 'io.github.petarmc1.build-all-plugin' version '1.1-SNAPSHOT'
 }
 
 base {
@@ -13,7 +14,7 @@ group = project.maven_group
 
 repositories {
     maven { url "https://maven.shedaniel.me/" }
-    maven { url "https://maven.petarmc.com/releases/" }
+    maven { url "https://repo.petarmc.com/repository/maven-public/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
 //    maven {
 //        url "https://maven.petarmc.com/private/"
@@ -73,74 +74,9 @@ jar {
     }
 }
 
-tasks.register('buildAllVersions') {
-    group = 'build'
-
-    doLast {
-        def gradleScript = System.getProperty("os.name").toLowerCase().contains("win") ? "gradlew.bat" : "./gradlew"
-        def builtVersions = []
-        def outputDir = file('build/libs')
-        if (!outputDir.exists()) outputDir.mkdirs()
-
-        def hasBuildNumber = project.hasProperty('buildNumber')
-        def buildNumber = hasBuildNumber ? project.buildNumber : "local"
-        def modVersion = project.version
-        def modName = project.name
-
-        def makeFileName = { mcVersion ->
-            if (hasBuildNumber) {
-                return "${modName}-mc${mcVersion}-${buildNumber}.jar"
-            } else {
-                return "${modName}-mc${mcVersion}-v${modVersion}.jar"
-            }
-        }
-
-        def builds = []
-
-        def defaultId = 'default'
-        def defaultLabel = "Default (Minecraft ${project.minecraft_version} ClothConfig ${project.cloth_config_ver} ModMenu ${project.modmenu_version})"
-        def defaultCmd = "${gradleScript} build -PbuildDir=build/${defaultId}"
-        builds.add([id: defaultId, mcVersion: project.minecraft_version, fabricVersion: project.fabric_version, cmd: defaultCmd, label: defaultLabel])
-
-        fileTree(dir: 'props', include: '*.properties').each { propFile ->
-            Properties props = new Properties()
-            propFile.withInputStream { stream -> props.load(stream) }
-
-            def mcVersion = props.getProperty('minecraft_version')
-            def fabricVersion = props.getProperty('fabric_version')
-            def clothVersion = props.getProperty('cloth_config_ver')
-            def modmenuVersion = props.getProperty('modmenu_version')
-            def id = mcVersion
-            def label = "Minecraft ${mcVersion} (Fabric ${fabricVersion} ClothConfig ${clothVersion} ModMenu ${modmenuVersion})"
-            def cmd = "${gradleScript} build -PbuildDir=build/${id} " +
-                    "-Pminecraft_version=${mcVersion} " +
-                    "-Pyarn_mappings=${props.getProperty('yarn_mappings')} " +
-                    "-Ploader_version=${props.getProperty('loader_version')} " +
-                    "-Pfabric_version=${fabricVersion} " +
-                    "-Pcloth_config_ver=${clothVersion} " +
-                    "-Pmodmenu_version=${modmenuVersion}"
-            builds.add([id: id, mcVersion: mcVersion, fabricVersion: fabricVersion, cmd: cmd, label: label])
-        }
-
-        def processes = []
-        builds.each { build ->
-            println("Starting build for ${build.label}...")
-            def proc = build.cmd.execute()
-            processes.add(proc)
-        }
-
-        processes.each { it.waitFor() }
-        builtVersions.addAll(builds.collect { it.label })
-
-        builds.each { build ->
-            def buildLibsDir = file("build/${build.id}/libs")
-            fileTree(dir: buildLibsDir, include: '*.jar', exclude: '*-sources.jar').each { jar ->
-                def newName = makeFileName(build.mcVersion)
-                def destFile = new File(outputDir, newName)
-                jar.renameTo(destFile)
-            }
-        }
-
-        println("Built versions: ${builtVersions}")
-    }
+buildAllVersions{
+    includeBuildNumber = true
+    variantLabelKey = "minecraft_version"
+    nameWithBuildNumberPattern = '${name}-mc${variant}-${buildNumber}.jar'
+    nameWithVersionPattern = '${name}-mc${variant}-v${version}.jar'
 }

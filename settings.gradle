@@ -4,6 +4,10 @@ pluginManagement {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
+        maven {
+            name = "petarmc"
+            url = "https://repo.petarmc.com/repository/maven-public/"
+        }
         gradlePluginPortal()
     }
 }
